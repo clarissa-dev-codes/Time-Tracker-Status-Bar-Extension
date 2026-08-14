@@ -1,0 +1,59 @@
+{
+  "name": "time-tracker-status-bar",
+  "displayName": "Time Tracker Status Bar",
+  "description": "A smart coding time tracker with idel detection and stats.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "time-tracker-sidebar-container",
+          "title": "Time Tracker",
+          "icon": "$(watch)"
+        }
+      ]
+    },
+    "views": {
+      "time-tracker-sidebar-container": [
+        {
+          "type": "webview",
+          "id": "time-tracker-sidebar-view",
+          "name": "Session Stats"
+        }
+      ]
+    }
+  },
+  
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.125.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "typescript-eslint": "^8.61.1",
+    "eslint": "^10.5.0",
+    "typescript": "^6.0.3",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  }
+}
