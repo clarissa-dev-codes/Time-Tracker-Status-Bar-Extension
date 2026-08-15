@@ -1,9 +1,15 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs'; //uses Node's file system to read HTML file
 
 let totalSeconds = 0;
 let timerInterval: NodeJS.Timeout | undefined;
 let idleTimeout: NodeJS.Timeout | undefined;
 let currentProvider: TimeTrackerViewProvider | undefined;
+
+// -- Pomodoro tracker variables --- //
+let pomodoroSecondsLeft = 0;
+let pomodoroInterval: NodeJS.Timeout | undefined;
+let isPomodoroActive = false;
 
 let isIdle = false;
 const IDLE_THRESHOLD_SECONDS = 5; 
@@ -82,6 +88,43 @@ function resetIdleTimer() {
     }, IDLE_THRESHOLD_SECONDS * 1000);
 }
 
+// -- Pomodoro function -- //
+function startPomodoroMode(){
+	if (isPomodoroActive){
+		vscode.window.showWarningMessage('Ducky is already focused on a sprint!');
+		return;
+	}
+
+	isPomodoroActive = true;
+	pomodoroSecondsLeft = 25 * 60;
+
+	vscode.window.showInformationMessage('Ducky Focus Mode Started! Let\'s crush this 25-minute sprint.');
+
+	if(pomodoroInterval)
+	{
+		clearInterval(pomodoroInterval);
+	}
+
+	pomodoroInterval = setInterval(() => {
+		//only countdown if the user isn't completely idle
+		if (!isIdle && pomodoroSecondsLeft > 0){
+			pomodoroSecondsLeft--;
+		}
+
+		//when the timer runs out
+		if(pomodoroSecondsLeft <= 0){
+			clearInterval(pomodoroInterval);
+			isPomodoroActive = false;
+			vscode.window.showInformationMessage('Sprint Complete! Time for a well-deserved break! Excellent work.', {modal: true});
+		}
+
+		//Push updates down to the UI panel
+		if(currentProvider){
+			currentProvider.updateUI(totalSeconds, isIdle, fileTypeStats);
+		}
+	}, 1000);
+}
+
 // --- WEBVIEW VIEW PROVIDER ---
 class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -94,9 +137,21 @@ class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
         _token: vscode.CancellationToken
     ) {
         this._view = webviewView;
-        webviewView.webview.options = { enableScripts: true };
-        webviewView.webview.html = this._getHtmlForWebview();
+        webviewView.webview.options = { 
+			enableScripts: true,
+			localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'media')]
+		};
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
         
+		//Listens for messages coming from the webview
+		webviewView.webview.onDidReceiveMessage(message => {
+			switch(message.command){
+				case 'startPomodoro':
+					startPomodoroMode();
+					break;
+			}
+		})
+
         this.updateUI(totalSeconds, isIdle, fileTypeStats);
     }
 
@@ -104,6 +159,11 @@ class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
         if (!this._view) { return; }
 
         const formatted = this._formatTime(seconds);
+
+		// --- Pomodoro time as MM:SS --- //
+		const pomoMins = Math.floor(pomodoroSecondsLeft/60).toString().padStart(2, '0');
+		const pomoSecs = (pomodoroSecondsLeft % 60).toString().padStart(2, '0');
+		const formattedPomodoro = `${pomoMins}:${pomoSecs}`;
         
         // Build the visual roster payload
         const breakdownArray = Object.keys(stats).map(ext => {
@@ -117,7 +177,9 @@ class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
             type: 'updateState', 
             time: formatted,
             isIdle: idleState,
-            stats: breakdownArray
+            stats: breakdownArray,
+			isPomoActive: isPomodoroActive,
+			pomoTime: formattedPomodoro
         });
     }
 
@@ -128,125 +190,20 @@ class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
         return `${hrs}:${mins}:${secs}`;
     }
 
-    private _getHtmlForWebview(): string {
-        return `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <style>
-                    body {
-                        padding: 15px;
-                        font-family: var(--vscode-font-family);
-                        color: var(--vscode-foreground);
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                    }
-                    .clock-container {
-                        font-size: 2rem;
-                        font-weight: bold;
-                        font-family: monospace;
-                        margin-top: 15px;
-                        padding: 10px 20px;
-                        border-radius: 6px;
-                        background: var(--vscode-editor-background);
-                        border: 1px solid var(--vscode-widget-border);
-                        transition: opacity 0.3s ease;
-                    }
-                    .clock-container.idle { opacity: 0.4; }
-                    .status-badge {
-                        margin-top: 10px;
-                        font-size: 0.8rem;
-                        text-transform: uppercase;
-                        letter-spacing: 1px;
-                        padding: 2px 8px;
-                        border-radius: 4px;
-                        margin-bottom: 25px;
-                    }
-                    .status-badge.active { background: #28a745; color: white; }
-                    .status-badge.idle { background: #dc3545; color: white; }
+    private _getHtmlForWebview(webview: vscode.Webview): string {
+		const activeMascotUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'DuckyMain.png'));
+		const idleMascotUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'DuckyIdle.png'));
 
-                    .stats-container {
-                        width: 100%;
-                        max-width: 240px;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 8px;
-                    }
-                    .stat-row {
-                        display: flex;
-                        justify-content: space-between;
-                        padding: 6px 10px;
-                        border-radius: 4px;
-                        background: var(--vscode-sideBar-background);
-                        border: 1px solid var(--vscode-widget-border);
-                        font-size: 0.9rem;
-                    }
-                    .extension-label {
-                        font-weight: bold;
-                        color: var(--vscode-textLink-foreground);
-                    }
+		const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'sidebar.html');
+		let htmlContent = fs.readFileSync(htmlFilePath.fsPath, 'utf8');
 
-                    .mascot-placeholder {
-                        margin-top: 40px;
-                        font-style: italic;
-                        opacity: 0.5;
-                        font-size: 0.9rem;
-                    }
-                </style>
-            </head>
-            <body>
-                <h3>Session Time</h3>
-                <div class="clock-container" id="clock">00:00:00</div>
-                <div class="status-badge active" id="status">Active</div>
-                
-                <h4>Languages Breakdown</h4>
-                <div class="stats-container" id="statsList">
-                    <div style="text-align: center; opacity: 0.5;">No active file metrics yet.</div>
-                </div>
+		htmlContent = htmlContent.replace(/\${cspSource}/g, webview.cspSource);
+		htmlContent = htmlContent.replace(/\${activeMascotUri}/g, activeMascotUri.toString());
+		htmlContent = htmlContent.replace(/\${idleMascotUri}/g, idleMascotUri.toString());
 
-                <div class="mascot-placeholder">(Mascot placeholder room 🐾)</div>
+		return htmlContent;
+	}
 
-                <script>
-                    const clockEl = document.getElementById('clock');
-                    const statusEl = document.getElementById('status');
-                    const statsListEl = document.getElementById('statsList');
-
-                    window.addEventListener('message', event => {
-                        const message = event.data;
-                        if (message.type === 'updateState') {
-                            clockEl.textContent = message.time;
-                            
-                            if (message.isIdle) {
-                                clockEl.classList.add('idle');
-                                statusEl.textContent = 'Idle (Paused)';
-                                statusEl.className = 'status-badge idle';
-                            } else {
-                                clockEl.classList.remove('idle');
-                                statusEl.textContent = 'Active';
-                                statusEl.className = 'status-badge active';
-                            }
-
-                            if (message.stats && message.stats.length > 0) {
-                                statsListEl.innerHTML = ''; 
-                                message.stats.forEach(item => {
-                                    const row = document.createElement('div');
-                                    row.className = 'stat-row';
-                                    row.innerHTML = \`
-                                        <span class="extension-label">\${item.extension}</span>
-                                        <span>\${item.timeStr}</span>
-                                    \`;
-                                    statsListEl.appendChild(row);
-                                });
-                            }
-                        }
-                    });
-                </script>
-            </body>
-            </html>
-        `;
-    }
 }
 
 export function deactivate() {
