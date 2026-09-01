@@ -1,7 +1,7 @@
 {
   "name": "time-tracker-status-bar",
-  "displayName": "Time Tracker Status Bar",
-  "description": "A smart coding time tracker with idel detection and stats.",
+  "displayName": "Ducky Time Tracker & Focus Companion",
+  "description": "A smart coding time tracker with idle detection, customizable goals, and a reactive companion mascot.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.125.0"
@@ -26,6 +26,7 @@
     "views": {
       "time-tracker-sidebar-container": [
         {
+          "icon": "./media/icon.png",
           "type": "webview",
           "id": "time-tracker-sidebar-view",
           "name": "Session Stats"
