@@ -1,71 +1,66 @@
-# time-tracker-status-bar README
+### Time Tracker Status Bar Extension
 
-This is the README for your extension "time-tracker-status-bar". After writing up a brief description, we recommend including the following sections.
+A lightweight, distraction-free **Visual Studio Code** extension designed to monitor and display your active coding duration directly inside your editor's status bar. 
 
-## Features
+### 🌟 Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* **Status Bar Integration:** Keep track of your coding sessions at a glance without switching windows.
+* **Interactive Sidebar:** Access deep-dive metrics and logs via a clean, dedicated HTML sidebar view.
+* **Automatic Pausing:** Intelligently tracks active development work so your data remains accurate.
 
-For example if there is an image subfolder under your extension project workspace:
+### 📥 Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+### Manual Installation (VSIX)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. Navigate to the **Releases** section on the right side of this GitHub repository page.
+2. Download the latest .vsix file from the **Assets** dropdown.
+3. Open **VS Code**.
+4. Press Ctrl+Shift+X (Windows/Linux) or Cmd+Shift+X (macOS) to open the **Extensions** view.
+5. Click the ... (More Actions) menu in the top-right corner of the Extensions pane.
+6. Select **Install from VSIX...** and choose the downloaded file.
 
-## Requirements
+### ⚙️ Configuration & Settings
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+This extension contributes the following settings through your VS Code settings.json: 
 
-## Extension Settings
+* timeTracker.enable: Toggle the extension tracking on or off. *(Default: true)*
+* timeTracker.updateInterval: Adjust how often (in seconds) the status bar text updates. *(Default: 60)*
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+### 🛠️ Development & Local Setup
 
-For example:
+If you want to clone this repository and modify the extension yourself, follow these steps: 
 
-This extension contributes the following settings:
+### Prerequisites
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* [Node.js](https://nodejs.org/) (v18 or higher recommended)
+* [Visual Studio Code](https://code.visualstudio.com/)
 
-## Known Issues
+### Steps
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+1. Clone the repository: 
 
-## Release Notes
+bash
 
-Users appreciate release notes as you update your extension.
+git clone https://github.com/clarissa-dev-codes/Time-Tracker-Status-Bar-Extension.git
+cd Time-Tracker-Status-Bar-Extension
 
-### 1.0.0
+Use code with caution.
+2. Install dependencies: 
 
-Initial release of ...
+bash
 
-### 1.0.1
+npm install
 
-Fixed issue #.
+Use code with caution.
+3. Open the project in VS Code: 
 
-### 1.1.0
+bash
 
-Added features X, Y, and Z.
+code .
 
----
+Use code with caution.
+4. Press F5 to open a new **Extension Development Host** window and test your changes live.
 
-## Following extension guidelines
+### 📄 License
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICENSE) file for details.
