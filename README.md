@@ -1,66 +1,41 @@
-### Time Tracker Status Bar Extension
+# Ducky Time Tracker & Focus Companion 🦆⏱️
 
-A lightweight, distraction-free **Visual Studio Code** extension designed to monitor and display your active coding duration directly inside your editor's status bar. 
+A smart, feature-rich **Visual Studio Code** extension designed to monitor active coding duration, keep you focused with a built-in Pomodoro timer, and provide a reactive coding mascot in your editor's sidebar panel!
+
+---
 
 ### 🌟 Features
 
-* **Status Bar Integration:** Keep track of your coding sessions at a glance without switching windows.
-* **Interactive Sidebar:** Access deep-dive metrics and logs via a clean, dedicated HTML sidebar view.
-* **Automatic Pausing:** Intelligently tracks active development work so your data remains accurate.
+* **Interactive Ducky Sidebar Companion:** Reacts dynamically to your coding activity (Active, Idle/Paused, or Break Enforcer states).
+* **Hue-Rotation Style Customizer:** Color-tint slider card that saves hue preferences locally.
+* **Smart Boundary Resets:** Automatically detects new days or workspace changes, saving stats and resetting daily metrics.
+* **Languages Breakdown:** Displays real-time telemetry logs of time spent per file extension.
+* **Integrated Pomodoro Timer:** Keep track of structured 25-minute focus sessions directly from the panel.
+* **Enterprise-Grade Security Sandbox:** Built with a secure CSP Nonce model for safe webview events.
 
-### 📥 Installation
+---
 
-### Manual Installation (VSIX)
+### 📥 Installation (Manual VSIX)
 
-1. Navigate to the **Releases** section on the right side of this GitHub repository page.
-2. Download the latest .vsix file from the **Assets** dropdown.
-3. Open **VS Code**.
-4. Press Ctrl+Shift+X (Windows/Linux) or Cmd+Shift+X (macOS) to open the **Extensions** view.
-5. Click the ... (More Actions) menu in the top-right corner of the Extensions pane.
-6. Select **Install from VSIX...** and choose the downloaded file.
+1. Navigate to the **Releases** section on the GitHub repository page.
+2. Download the latest `.vsix` bundle from **Assets**.
+3. Open **VS Code** and press `Ctrl+Shift+X` (Windows/Linux) or `Cmd+Shift+X` (macOS).
+4. Click the `...` (**More Actions**) icon in the top-right of the Extensions panel and select **Install from VSIX...**.
 
-### ⚙️ Configuration & Settings
+---
 
-This extension contributes the following settings through your VS Code settings.json: 
+### 🛠️ Local Development
 
-* timeTracker.enable: Toggle the extension tracking on or off. *(Default: true)*
-* timeTracker.updateInterval: Adjust how often (in seconds) the status bar text updates. *(Default: 60)*
+1. Clone the repository and install dependencies:
+   ```bash
+   git clone https://github.com
+   cd Time-Tracker-Status-Bar-Extension
+   npm install
+   ```
+2. Open in VS Code (`code .`) and press **F5** to start the Extension Development Host.
+3. Package locally using `npx vsce package`.
 
-### 🛠️ Development & Local Setup
-
-If you want to clone this repository and modify the extension yourself, follow these steps: 
-
-### Prerequisites
-
-* [Node.js](https://nodejs.org/) (v18 or higher recommended)
-* [Visual Studio Code](https://code.visualstudio.com/)
-
-### Steps
-
-1. Clone the repository: 
-
-bash
-
-git clone https://github.com/clarissa-dev-codes/Time-Tracker-Status-Bar-Extension.git
-cd Time-Tracker-Status-Bar-Extension
-
-Use code with caution.
-2. Install dependencies: 
-
-bash
-
-npm install
-
-Use code with caution.
-3. Open the project in VS Code: 
-
-bash
-
-code .
-
-Use code with caution.
-4. Press F5 to open a new **Extension Development Host** window and test your changes live.
+---
 
 ### 📄 License
-
-This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICENSE) file for details.
+Distributed under the **GPL-3.0 License**.
