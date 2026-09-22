@@ -1,11 +1,18 @@
 {
-  "name": "time-tracker-status-bar",
-  "displayName": "Ducky Time Tracker & Focus Companion",
+  "name": "ducky-time-tracker-and-focus-companion",
+  "publisher": "clarissa-dev-codes",
+  "displayName": "DevDucky: Time Tracker & Focus Companion",
   "description": "A smart coding time tracker with idle detection, customizable goals, and a reactive companion mascot.",
-  "version": "0.0.1",
+  "version": "1.0.9",
+  "icon": "media/icon.png",
   "engines": {
     "vscode": "^1.125.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clarissa-dev-codes/Time-Tracker-Status-Bar-Extension"
+  },
+
   "categories": [
     "Other"
   ],
@@ -19,7 +26,7 @@
         {
           "id": "time-tracker-sidebar-container",
           "title": "Time Tracker",
-          "icon": "$(watch)"
+          "icon": "./media/icon.png"
         }
       ]
     },

@@ -9,3 +9,7 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+
+src/**/*.ts
+!src/sidebar.html
+!media/*
