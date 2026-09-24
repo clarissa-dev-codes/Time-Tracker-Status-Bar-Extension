@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} https:; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} https:; script-src 'nonce-${nonce}'; style-src ${cspSource} 'unsafe-inline';">
         <style>
             body{
                 padding: 15px;
@@ -44,6 +44,33 @@
                 color: white;
             }
 
+            /* --- Dropdown Menu Styles --- */
+            .dropdown {
+                position: relative;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: var(--vscode-menu-background);
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+            .dropdown-content a {
+                color: var(--vscode-foreground);
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+            .dropdown-content a:hover {
+                background-color: var(--vscode-menu-selectionBackground);
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
             /* --- Mascot Container --- */
             .mascot-container{
                 margin-top: 10px;
@@ -53,13 +80,37 @@
                 align-items: center;
                 gap: 12px;
             }
-            .mascot-image{
+            .mascot-image-wrapper{
+                width: 120px;
+                height: 120px;
+                position: relative;
+            }
+            #mascotContent{
+                display: grid;
+                width: 120px;
+                height: 120px;
+            }
+            #mascotContent.floating{
+                animation: hoverEffect 3s infinite ease-in-out !important;
+            }
+            .mascot-image, .mascot-costume, .mascot-behind{
+                grid-area: 1/1;
                 width: 120px;
                 height: 120px;
                 object-fit: contain;
-                transition: all 0.3s ease;
-                animation: hoverEffect 3s infinite ease-in-out;
+                margin: 0 !important;
+                padding: 0 !important;
             }
+            
+            .mascot-image{
+                z-index: 2;
+            }
+            .mascot-costume{
+                z-index: 3;
+                pointer-events: none;
+                transform-origin: center;
+            }
+            
             .mascot-speech{
                 font-size: 0.85rem;
                 opacity: 0.8;
@@ -75,6 +126,58 @@
             @keyframes hoverEffect{
                 0%, 100% {transform: translateY(0);}
                 50% {transform: translateY(-5px);}
+            }
+
+            /* -- Goal Panel Config Styles -- */
+            .goal-panel{
+                width: 100%;
+                max-width: 240px;
+                margin-bottom: 25px;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                background: var(--vscode-sideBar-background);
+                padding: 10px;
+                border-radius: 6px;
+            }
+            .goal-title{
+                font-size: 0.85rem;
+                font-weight: bold;
+                opacity: 0.9;
+            }
+            .goal-row{
+                display: flex;
+                gap: 8px;
+            }
+            .goal-input{
+                width: 70px;
+                background: var(--vscode-input-background);
+                color: var(--vscode-input-foreground);
+                border: 1px solid var(--vscode-input-border);
+                padding: 4px;
+                border-radius: 4px;
+                text-align: center;
+            }
+            .save-goal-btn{
+                flex-grow: 1;
+                background: var(--vscode-button-secondaryBackground);
+                color: var(--vscode-button-secondaryForeground);
+                border: 1px solid var(--vscode-widget-border);
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            .save-goal-btn:hover{
+                background: var(--vscode-button-background);
+                color: var(--vscode-button-foreground);
+            }
+
+            /* Color slider input styling */
+            .color-slider{
+                width: 100%;
+                margin: 4px 0;
+                cursor: pointer;
             }
 
             .stats-container{
@@ -104,49 +207,200 @@
         <div class="clock-container" id="clock">00:00:00</div>
         <div class="status-badge active" id="status">Active</div>
 
+        <!-- Mascot Display Panel -->
+        <!-- This is where the outfits should go too. Need to be drawn on the sprite
+               in the art file and then upload the costume file without a background
+               then the outfit can be applied or removed-->
         <div class="mascot-container">
-            <img class="mascot-image" id="mascotImg" src="${activeMascotUri}" alt="Mascot">
+            <!-- Costume Selection Panel --->
+            <!-- This is gonna be a dropdown menu for selecting different outfits --->
+            <label for="costume-select">Choose Outfit:</label>
+            <select id="costume-select">
+                <option value="none">None</option>
+                <option value="bowtie">Bowtie</option>
+                <option value="bow">Bow</option>
+                <option value="bread">Bread</option>
+                <option value="flower">Flower</option>
+                <option value="axolotl">Axolotl Mask</option>
+            </select>
+
+            <div class="mascot-image-wrapper" id="mascot-wrapper">
+                <div id="mascotContent">
+                    <img src="" class="mascot-behind" id="behindDuck" src="${bowOutfitUri}" alt="Bow Behind" style="display: none;">
+                    <img class="mascot-image" id="mascotImg" src="${activeMascotUri}" alt="Mascot">
+                    <img src="" class="mascot-costume" id="mascot-costume" alt="Costume Overlay" style="display: none;"> <!-- Need to figure out why the last three aren't showing up-->
+                </div>    
+            </div>
             <div class="mascot-speech" id="mascotSpeech">Let's write some code!</div>
         </div>
 
+        
         <!-- Pomodoro Control Panel UI -->
         <div style="margin-bottom: 20px;">
             <button id="pomoBtn" style="background: var(--vscode-button-background); color: var(--vscode-button-foreground);
                 border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
                     Start 25m Focus
             </button>
+            <button id="resetBtn" style="background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);
+                border: 1px solid var(--vscode-widget-border); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    Reset Stats
+            </button>
         </div>
+
+        <!-- Target Goal Config Box -->
+         <div class="goal-panel">
+            <div class="goal-title" id="goalDisplay">Daily Goal: 2.0 hours</div>
+            <div class="goal-row">
+                <input class="goal-input" type="number" id="goalInput" min="0.1" step="0.1" value="2.0">
+                <button class="save-goal-btn" id="saveGoalBtn">Set Hours</button>
+            </div>
+         </div>
+
+         <!-- Mascot palette tint customization slider card -->
+          <div class="config-panel">
+            <div class="panel-title">Mascot Color Style</div>
+            <input class="color-slider" type="range" id="colorSlider" min="0" max="360" value="0">
+          </div>
+
+          
 
         <h4>Languages Breakdown</h4>
         <div class="stats-container" id="statsList">
             <div style="text-align: center; opacity: 0.5;">No active file metrics yet.</div>
         </div>
 
-        <script>
+        <!-- Full Report Analytics Trigger Link Panel -->
+         <div style="margin-top: 30px; text-align: center; width: 100%;">
+            <a id="dashboardLink" href="#" style="color: var(--vscode-textLink-foreground); font-size: 0.85rem; text-decoration: none; font-weight: bold;">
+                View Full History Report →
+            </a>
+         </div>
+
+        <script nonce="${nonce}">
             const vscode = acquireVsCodeApi();
 
             const clockEl = document.getElementById('clock');
             const statusEl = document.getElementById('status');
             const statsListEl = document.getElementById('statsList');
+
+            const costumeBehindEl = document.getElementById('behindDuck'); //should be the bow outfit
+
+            const costumeSelectEl = document.getElementById('costume-select');
+            const costumeImgEl = document.getElementById('mascot-costume'); //this is the costumes in front
+
+            const wrapper = document.getElementById('mascot-wrapper');
+            const mascotContent = document.getElementById('mascotContent');
             
             const mascotImgEl = document.getElementById('mascotImg');
             const mascotSpeechEl = document.getElementById('mascotSpeech');
             const pomoBtnEl = document.getElementById('pomoBtn');
+            const resetBtnEl = document.getElementById('resetBtn');
+
+            const goalDisplayEl = document.getElementById('goalDisplay');
+            const goalInputEl = document.getElementById('goalInput');
+            const saveGoalBtnEl = document.getElementById('saveGoalBtn');
+
+            const dashboardLinkEl = document.getElementById('dashboardLink');
+
+            const colorSliderEl = document.getElementById('colorSlider');
 
             const activeSrc = "${activeMascotUri}";
             const idleSrc = "${idleMascotUri}";
+            const angrySrc = "${angryMascotUri}";
 
-            // FIX: Updated variable name to pomoBtnEl to match declaration above
+            
+            
+            const frontCostumePaths = {
+                bowtie: "${bowtieOutfitUri}",
+                bread: "${breadOutfitUri}",
+                flower: "${flowerOutfitUri}",
+                axolotl: "${axolotlOutfitUri}"
+            };
+
+            const bowPath = "${bowOutfitUri}";
+
+            function applyCostume(costume){
+                costumeBehindEl.src = "";
+                costumeBehindEl.style.display = "none";
+
+                costumeImgEl.src = "";
+                costumeImgEl.style.display = "none";
+
+                if(costume === "bow" && bowPath){
+                    costumeBehindEl.src = bowPath;
+                    costumeBehindEl.style.display = "block";
+                }
+                else if(frontCostumePaths[costume]){
+                    costumeImgEl.src = frontCostumePaths[costume];
+                    costumeImgEl.style.display = "block";
+                }
+
+
+                
+            }
+
+            costumeSelectEl.addEventListener('change', function(){
+                const selectedValue = this.value;
+                
+                applyCostume(selectedValue);
+                
+                
+                vscode.postMessage({
+                    command: 'updateMascotCostume',
+                    value: selectedValue
+                });
+            });
+
             pomoBtnEl.addEventListener('click', () => {
                 vscode.postMessage({command: 'startPomodoro' });
             });
 
+            resetBtnEl.addEventListener('click', () => {
+                vscode.postMessage({ command: 'resetAllStats'});
+            });
+
+            saveGoalBtnEl.addEventListener('click', () => {
+                const hoursValue = parseFloat(goalInputEl.value) || 2.0;
+                vscode.postMessage({
+                    command: 'updateDailyGoal',
+                    value: hoursValue
+                });
+            });
+
+            dashboardLinkEl.addEventListener('click', (e) => {
+                e.preventDefault(); //prevents standard page jumping behavior
+                vscode.postMessage({command: 'openDashboard'});
+            });
+
+            colorSliderEl.addEventListener('input', () => {
+                const rotation = colorSliderEl.value;
+                mascotImgEl.style.filter = 'hue-rotate(' + rotation + 'deg)';
+                vscode.postMessage({
+                    command: 'updateMascotHue',
+                    value: parseInt(rotation)
+                });
+
+                vscode.postMessage({
+                    command: 'saveMascotColor',
+                    hueValue: parseInt(rotation)
+                });
+            });
+
             window.addEventListener('message', event => {
                 const message = event.data;
-                if (message.type === 'updateState') {
+                if(message.type === 'updateState'){
                     clockEl.textContent = message.time;
+                    
 
-                    // --- Pomodoro Text & Speech State --- //
+                    if(message.savedHue !== undefined){
+                        colorSliderEl.value = message.savedHue;
+                        mascotImgEl.style.filter = 'hue-rotate(' + message.savedHue + 'deg)';
+                    }
+
+                    if(message.currentGoalHours !== undefined){
+                        goalDisplayEl.textContent = 'Daily Goal: ' + message.currentGoalHours + ' hours';
+                    }
+
                     if(message.isPomoActive){
                         pomoBtnEl.textContent = 'Focus: ' + message.pomoTime;
                         pomoBtnEl.style.opacity = '0.85';
@@ -155,35 +409,86 @@
                         pomoBtnEl.textContent = 'Start 25m Focus';
                         pomoBtnEl.style.opacity = '1';
                     }
-                    
-                    if (message.isIdle) {
-                        clockEl.classList.add('idle');
-                        statusEl.textContent = 'Idle (Paused)';
-                        statusEl.className = 'status-badge idle';
-                        
-                        mascotImgEl.src = idleSrc;
-                        mascotSpeechEl.textContent = 'Taking a quick break...';
-                        mascotImgEl.style.animation = 'none'; 
-                        mascotImgEl.style.opacity = '0.6';
-                    } else {
-                        clockEl.classList.remove('idle');
-                        statusEl.textContent = 'Active';
-                        statusEl.className = 'status-badge active';
-                        
-                        mascotImgEl.src = activeSrc;
-                        mascotImgEl.style.animation = 'hoverEffect 3s infinite ease-in-out';
-                        mascotImgEl.style.opacity = '1';
 
-                        if(message.isPomoActive){
-                            mascotSpeechEl.textContent = "Shhh... I'm locked in!";
-                        }
-                        else{
-                            mascotSpeechEl.textContent = 'Keep it up! Doing great!';
-                        }
+                    //going to help keep the costume from disappearing after a second
+                    //basically a really smart gatekeeper
+                    
+
+                    if(message.currentCostume !== undefined){
+                        costumeSelectEl.value = message.currentCostume;
+                        applyCostume(message.currentCostume);
                     }
 
-                    if (message.stats && message.stats.length > 0) {
-                        statsListEl.innerHTML = ''; 
+                    if(message.isUserIgnoringBreak){
+                        if(mascotImgEl.dataset.state !== 'angry'){
+                            mascotImgEl.src = angrySrc;
+                            mascotImgEl.dataset.state = 'angry';
+                        }
+                        mascotSpeechEl.innerHTML = "<strong>HEY!</strong> You've been coding over an hour! STEP AWAY FROM THE KEYBOARD!";
+                        mascotImgEl.style.opacity = '1';
+
+                        if(mascotContent){
+                            mascotContent.classList.remove('floating');
+                        }
+
+                        if(message.isIdle){
+                            clockEl.classList.add('idle');
+                            statusEl.textContent = 'Idle (Paused)';
+                            statusEl.className = 'status-badge idle';
+                            mascotSpeechEl.innerHTML = "...Hmph! You're ignoring me! Go stretch them flippers!";
+                        }
+                        else{
+                            clockEl.classList.remove('idle');
+                            statusEl.textContent = 'Active';
+                            statusEl.className = 'status-badge active';
+                        }
+                    }
+                    else{
+                        if(message.isIdle){
+                            clockEl.classList.add('idle');
+                            statusEl.textContent = 'Idle (Paused)';
+                            statusEl.className = 'status-badge idle';
+
+                            if(mascotImgEl.dataset.state !== 'idle'){
+                                mascotImgEl.src = idleSrc;
+                                mascotImgEl.dataset.state = 'idle';
+                            }
+                            mascotImgEl.style.animation = 'none';
+                            mascotImgEl.style.opacity = '0.6';
+                            mascotSpeechEl.textContent = 'Taking a quick break...';
+
+                            if(mascotContent){
+                                mascotContent.classList.add('floating');
+                            }
+                        }
+                        else{
+                            clockEl.classList.remove('idle');
+                            statusEl.textContent = 'Active';
+                            statusEl.className = 'status-badge active';
+
+                            if(mascotImgEl.dataset.state !== 'active'){
+                                mascotImgEl.src = activeSrc;
+                                mascotImgEl.dataset.state = 'active'
+                            }
+                            mascotImgEl.style.opacity = '1';
+                            
+                            if(mascotContent){
+                                mascotContent.classList.add('floating');
+                            }
+
+                            if(message.isPomoActive){
+                                mascotSpeechEl.textContent = "Shhh... I'm locked in!";
+                            }
+                            else if(message.isGoalReached){
+                                mascotSpeechEl.innerHTML = "<strong>Goal cleared!</strong> We did it! You're a rockstar!";
+                            }
+                            else{
+                                mascotSpeechEl.textContent = 'Keep it up! Doing great!';
+                            }
+                        }
+                    }
+                    if(message.stats && message.stats.length > 0){
+                        statsListEl.innerHTML = '';
                         message.stats.forEach(item => {
                             const row = document.createElement('div');
                             row.className = 'stat-row';
@@ -194,8 +499,11 @@
                             statsListEl.appendChild(row);
                         });
                     }
+                
                 }
             });
-        </script>
+         </script>
     </body>
 </html>
+
+
