@@ -3,7 +3,7 @@
   "publisher": "clarissa-dev-codes",
   "displayName": "DevDucky: Time Tracker & Focus Companion",
   "description": "A smart coding time tracker with idle detection, customizable goals, and a reactive companion mascot.",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "icon": "media/icon.png",
   "engines": {
     "vscode": "^1.125.0"

@@ -1,9 +1,8 @@
-# Change Log
+# Changelog
 
-All notable changes to the "time-tracker-status-bar" extension will be documented in this file.
+## - 2026-09-30
+* Added color slider interface and new costumes (bowtie, bow, bread, flower, axolotl mask).
+* Adjusted idle detection threshold to one minute.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+##
+* Initial release with status bar timer and sidebar dashboard.

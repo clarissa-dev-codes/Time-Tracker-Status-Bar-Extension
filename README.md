@@ -1,24 +1,18 @@
-### Time Tracker Status Bar Extension
+# DevDucky: Time Tracker & Focus Companion
 
-A lightweight and efficient time-tracking extension for Visual Studio Code that integrates seamlessly into your status bar and sidebar workspace. Keep tabs on your development hours without breaking your coding flow. 
+A smart coding time tracker for Visual Studio Code featuring idle detection, customizable goals, and a reactive companion mascot.
 
-### Features
+## Features
 
-* **Status Bar Integration:** View your active coding session time right at the bottom of your editor window.
-* **Custom Sidebar Interface:** Open the dedicated sidebar view (sidebar.html) for more detailed session insights, controls, and management tools.
-* **Workspace Aware:** Track time accurately relative to your active project context.
+* **Status Bar Integration:** View active coding time at the bottom of your editor.
+* **Custom Sidebar Interface:** Open dedicated Session Stats for detailed insights.
+* **Interactive Mascot:** Includes DevDucky, a reactive focus companion with customizable colors and costumes (Axolotl mask, Bow, Bowtie, Bread, Flower).
 
-### Extension Settings
+## Extension Settings
 
-This extension contributes the following configurable settings: 
+* `timeTracker.enable`: Toggle the status bar item.
+* `timeTracker.updateInterval`: Adjust refresh frequency in seconds.
 
-* timeTracker.enable: Toggle the time tracker status bar item on or off.
-* timeTracker.updateInterval: Adjust how often (in seconds) the status bar clock refreshes.
+## License
 
-### Release Notes
-
-### 1.0.0
-
-* Initial release of the Time Tracker Status Bar extension.
-* Added status bar timer display.
-* Integrated custom sidebar dashboard interface.
+GPL-3.0 License.
