@@ -361,6 +361,12 @@ class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
 		const flowerOutfitUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'Flower.png'));
 		const axolotlOutfitUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'AxolotlMask.png'));
 
+		//Halloween stuff, will be removed after October 31st, 2026
+		const ghostOutfitUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'Ghost.png'));
+		const pumpkinOutfitUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'Pumpkin.png'));
+		const mummyOutfitUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'Mummy.png'));
+		const vampireOutfitUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'Vampire.png'));
+
 		let htmlFilePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'sidebar.html');
 		if (!fs.existsSync(htmlFilePath.fsPath)){
 			htmlFilePath = vscode.Uri.joinPath(this._extensionUri, 'sidebar.html');
@@ -384,6 +390,12 @@ class TimeTrackerViewProvider implements vscode.WebviewViewProvider {
 			htmlContent = htmlContent.replace(/\${breadOutfitUri}/g, breadOutfitUri.toString());
 			htmlContent = htmlContent.replace(/\${flowerOutfitUri}/g, flowerOutfitUri.toString());
 			htmlContent = htmlContent.replace(/\${axolotlOutfitUri}/g, axolotlOutfitUri.toString());
+
+			//Halloween stuff, will be removed after October 31st, 2026
+			htmlContent = htmlContent.replace(/\${ghostOutfitUri}/g, ghostOutfitUri.toString());
+			htmlContent = htmlContent.replace(/\${pumpkinOutfitUri}/g, pumpkinOutfitUri.toString());
+			htmlContent = htmlContent.replace(/\${mummyOutfitUri}/g, mummyOutfitUri.toString());
+			htmlContent = htmlContent.replace(/\${vampireOutfitUri}/g, vampireOutfitUri.toString());
 
             return htmlContent;
         } catch (error) {
