@@ -2,7 +2,7 @@
 
 A smart coding time tracker for Visual Studio Code featuring idle detection, customizable goals, and a reactive companion mascot.
 
-##Halloween Update!
+## Halloween Update!
 * **Four New Costumes:** Four new costumes to dress up your DevDucky for Halloween
 
 ## Features
